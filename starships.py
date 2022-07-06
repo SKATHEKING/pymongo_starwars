@@ -8,6 +8,7 @@ response = requests.get('https://swapi.dev/api/starships/?page=1')
 #does api call
 def do_call(url):
 	response = requests.get(url)
+	pprint.pprint(response.json())
 
 #prints status code for api call as well as results
 def api_call_check():
@@ -40,7 +41,7 @@ def all_pilot_api_call():
 
 	try:
 		for pilots in ships:
-			if pilots['pilots'] != [] :
+			if pilots['pilots'] != [] and pilots['pilots'] != None:
 				for pilot in pilots['pilots']:
 
 					do_call(pilot)
@@ -64,3 +65,4 @@ def insert_into_collection():
 #api_call_check()
 #print(api_call_all())
 all_pilot_api_call()
+#do_call('https://swapi.dev/api/people/39/')
