@@ -2,6 +2,11 @@ import requests
 import pprint
 import pymongo
 
+
+client = pymongo.MongoClient()
+
+db = client['starwars']
+
 #does singular api call
 response = requests.get('https://swapi.dev/api/starships/?page=1')
 
@@ -53,16 +58,21 @@ def all_pilot_api_call():
 	except :
 		print('It was no possible to find any ships')
 
-	finally:
+
 		return list_of_pilots
 
+#adds starship database to collection
+def add_collection():
+	db['starships'].insert_many(api_call_all())
 
-#inserts into collection
+#inserts into collection all pilots with their corresponding ids
 def insert_into_collection():
-	print('to be done ')
+	for pilot in all_pilot_api_call()['name']:
+		db.characters.find({'name:' f'{pilot}' })
 
 
 #api_call_check()
 #print(api_call_all())
-all_pilot_api_call()
+#all_pilot_api_call()
 #do_call('https://swapi.dev/api/people/39/')
+#insert_into_collection()
