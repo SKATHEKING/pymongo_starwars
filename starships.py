@@ -112,15 +112,14 @@ def insert_into_collection():
     db = client["starwars"]
     create_collection_starship(collection='starships')
     #add_all_ships()
-    if all_pilot_api_call() != None:
-        for ship in api_call_all():
+    for ship in api_call_all():
             if ship['pilots']:
                 pilot_ids_list = []
                 for pilot in all_pilot_api_call():
                     pilot_id = db.characters.find_one({'name': pilot }, {'_id': 1})
                     pilot_ids_list.append(pilot_id)
                     ship['pilots'] = pilot_ids_list
-                    add_collection(ship)
+            add_collection(ship)
 
 
 # api_call_check()
