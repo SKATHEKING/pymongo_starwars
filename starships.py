@@ -63,11 +63,11 @@ def all_pilot_api_call():
             if ship['pilots'] != [] and ship['pilots'] != None:
                 for pilots in ship['pilots']:
                     if pilots:
-                            pilot_data = do_call(pilots)
-                            print(pilot_data['name'])
-                            list_of_pilots.append(pilot_data['name'])
+                        pilot_data = do_call(pilots)
+                        print(pilot_data['name'])
+                        list_of_pilots.append(pilot_data['name'])
 
-                       # pprint.pprint(do_call(pilot))
+                    # pprint.pprint(do_call(pilot))
             else:
                 print('No pilots were found')
         print(list_of_pilots)
@@ -84,7 +84,8 @@ def add_collection(ship):
     ship_collection = db['starships']
     ship_collection.insert_one(ship)
     # db['starships'].insert_one(api_call_all())
-
+def add_all_ships():
+    db['starships'].insert_many(api_call_all())
 
 # removes collection if it exists
 def remove_collection(collection='starships'):
@@ -97,35 +98,37 @@ def remove_collection(collection='starships'):
 
 
 # checks if collection is there if not it creates collection
-def create_collection(collection='starships'):
+def create_collection_starship(collection='starships'):
     if db.starships:
         remove_collection()
-    else:
-        db.create_collection(collection)
+
+    db.create_collection(collection)
+    print(f'{collection} created successfully')
 
 
 # inserts into collection all pilots with their corresponding ids
 def insert_into_collection():
     client = pymongo.MongoClient()
-    create_collection(collection='starships')
+    db = client["starwars"]
+    create_collection_starship(collection='starships')
+    #add_all_ships()
     if all_pilot_api_call() != None:
         for ship in api_call_all():
             if ship['pilots']:
                 pilot_ids_list = []
-
                 for pilot in all_pilot_api_call():
-                    pilot_id = db.characters.find_one({'name:' f'{pilot}'}, {'_id:1', 'name: 1'})
+                    pilot_id = db.characters.find_one({'name': pilot }, {'_id': 1})
                     pilot_ids_list.append(pilot_id)
-                    db.starships.update_one({'_id': ship['_id']}, {"$set": {"pilots": pilot_id}})
-                ship['pilots'] = pilot_ids_list
-                add_collection(ship)
+                    ship['pilots'] = pilot_ids_list
+                    add_collection(ship)
 
 
 # api_call_check()
 # print(api_call_all())
-#all_pilot_api_call()
+# all_pilot_api_call()
 # do_call('https://swapi.dev/api/people/39/')
 insert_into_collection()
 # add_collection()
 # remove_collection()
 # api_call_all()
+#add_all_ships()
