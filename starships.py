@@ -82,21 +82,31 @@ def add_collection():
 
 # removes collection if it exists
 def remove_collection(collection='starships'):
-    if db[collection]:
-        db[collection].drop()
+   try:
+        if db[collection]:
+            db[collection].drop()
+            print("Removed " + collection)
+   except:
+       print('Unable to drop collection')
 
 
 # inserts into collection all pilots with their corresponding ids
 def insert_into_collection():
-    for pilot in all_pilot_api_call()['name']:
-        pilot_object = db.characters.find({'name:' f'{pilot}'})
-
+    client = pymongo.MongoClient()
+    if all_pilot_api_call() != None:
+        for ship in api_call_all():
+            if ship['pilots']:
+                for pilot in all_pilot_api_call():
+                    pilot_object = db.characters.find_one({'name:' f'{pilot["name"]}'}, {'_id:1'})
+                    for pilot_member in ship['pilots']:
+                        pilot_member = pilot_object
+                    print(pilot_object)
 
 # api_call_check()
 # print(api_call_all())
 # all_pilot_api_call()
 # do_call('https://swapi.dev/api/people/39/')
-# insert_into_collection()
+insert_into_collection()
 #add_collection()
-# remove_collection()
+#remove_collection()
 #api_call_all()
