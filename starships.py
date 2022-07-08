@@ -37,7 +37,6 @@ def api_call_all():
 
         response = requests.get(response.json()['next'])
 
-
     try:
         if response.json()['next'] == None:
 
@@ -60,53 +59,75 @@ def all_pilot_api_call():
     list_of_pilots = []
 
     try:
-        for pilots in ships:
-            if pilots['pilots'] != [] and pilots['pilots'] != None:
-                for pilot in pilots['pilots']:
-                    do_call(pilot)
-                    list_of_pilots.append(pilot)
-                    pprint.pprint(do_call(pilot))
+        for ship in ships:
+            if ship['pilots'] != [] and ship['pilots'] != None:
+                for pilots in ship['pilots']:
+                    if pilots:
+                            pilot_data = do_call(pilots)
+                            print(pilot_data['name'])
+                            list_of_pilots.append(pilot_data['name'])
+
+                       # pprint.pprint(do_call(pilot))
             else:
                 print('No pilots were found')
+        print(list_of_pilots)
 
     except:
         print('It was no possible to find any ships')
 
-        return list_of_pilots
+    pprint.pprint(list_of_pilots)
+    return list_of_pilots
 
 
 # adds starship database to collection
-def add_collection():
-    db['starships'].insert_many(api_call_all())
+def add_collection(ship):
+    ship_collection = db['starships']
+    ship_collection.insert_one(ship)
+    # db['starships'].insert_one(api_call_all())
 
 
 # removes collection if it exists
 def remove_collection(collection='starships'):
-   try:
+    try:
         if db[collection]:
             db[collection].drop()
             print("Removed " + collection)
-   except:
-       print('Unable to drop collection')
+    except:
+        print('Unable to drop collection')
+
+
+# checks if collection is there if not it creates collection
+def create_collection(collection='starships'):
+    if db.starships:
+        remove_collection()
+    else:
+        db.create_collection(collection)
 
 
 # inserts into collection all pilots with their corresponding ids
 def insert_into_collection():
     client = pymongo.MongoClient()
+    create_collection(collection='starships')
     if all_pilot_api_call() != None:
         for ship in api_call_all():
             if ship['pilots']:
+                pilot_ids_list = []
                 for pilot in all_pilot_api_call():
-                    pilot_object = db.characters.find_one({'name:' f'{pilot["name"]}'}, {'_id:1'})
-                    for pilot_member in ship['pilots']:
-                        pilot_member = pilot_object
-                    print(pilot_object)
+                    pilot_id = db.characters.find_one({'name:' f'{pilot["name"]}'}, {'_id:1', 'name: 1'})
+                    pilot_ids_list.append(pilot_id)
+
+                    #  for pilot_member in ship['pilots']:
+                    #      pilot_member = pilot_id
+                    # db.starships.update_one({'_id': ship['_id']}, {"$set": {"pilots": pilot_object}})
+                ship['pilots'] = pilot_ids_list
+                add_collection(ship)
+
 
 # api_call_check()
 # print(api_call_all())
-# all_pilot_api_call()
+all_pilot_api_call()
 # do_call('https://swapi.dev/api/people/39/')
-insert_into_collection()
-#add_collection()
-#remove_collection()
-#api_call_all()
+# insert_into_collection()
+# add_collection()
+# remove_collection()
+# api_call_all()
