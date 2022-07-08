@@ -83,7 +83,7 @@ def all_pilot_api_call(ship):
 def add_collection(ship):
     ship_collection = db['starships']
     ship_collection.insert_one(ship)
-    # db['starships'].insert_one(api_call_all())
+
 def add_all_ships():
     db['starships'].insert_many(api_call_all())
 
