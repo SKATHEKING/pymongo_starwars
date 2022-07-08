@@ -112,22 +112,20 @@ def insert_into_collection():
         for ship in api_call_all():
             if ship['pilots']:
                 pilot_ids_list = []
-                for pilot in all_pilot_api_call():
-                    pilot_id = db.characters.find_one({'name:' f'{pilot["name"]}'}, {'_id:1', 'name: 1'})
-                    pilot_ids_list.append(pilot_id)
 
-                    #  for pilot_member in ship['pilots']:
-                    #      pilot_member = pilot_id
-                    # db.starships.update_one({'_id': ship['_id']}, {"$set": {"pilots": pilot_object}})
+                for pilot in all_pilot_api_call():
+                    pilot_id = db.characters.find_one({'name:' f'{pilot}'}, {'_id:1', 'name: 1'})
+                    pilot_ids_list.append(pilot_id)
+                    db.starships.update_one({'_id': ship['_id']}, {"$set": {"pilots": pilot_id}})
                 ship['pilots'] = pilot_ids_list
                 add_collection(ship)
 
 
 # api_call_check()
 # print(api_call_all())
-all_pilot_api_call()
+#all_pilot_api_call()
 # do_call('https://swapi.dev/api/people/39/')
-# insert_into_collection()
+insert_into_collection()
 # add_collection()
 # remove_collection()
 # api_call_all()
