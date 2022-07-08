@@ -54,22 +54,22 @@ def api_call_all():
 
 
 # call all pilots apis from within the json api
-def all_pilot_api_call():
+def all_pilot_api_call(ship):
     ships = api_call_all()
     list_of_pilots = []
 
     try:
-        for ship in ships:
-            if ship['pilots'] != [] and ship['pilots'] != None:
-                for pilots in ship['pilots']:
-                    if pilots:
-                        pilot_data = do_call(pilots)
-                        print(pilot_data['name'])
-                        list_of_pilots.append(pilot_data['name'])
+        #for ship in ships:
+       if ship['pilots'] != [] and ship['pilots'] != None:
+             for pilots in ship['pilots']:
+                if pilots:
+                     pilot_data = do_call(pilots)
+                     print(pilot_data['name'])
+                     list_of_pilots.append(pilot_data['name'])
 
                     # pprint.pprint(do_call(pilot))
-            else:
-                print('No pilots were found')
+       else:
+        print('No pilots were found')
         print(list_of_pilots)
 
     except:
@@ -115,7 +115,7 @@ def insert_into_collection():
     for ship in api_call_all():
             if ship['pilots']:
                 pilot_ids_list = []
-                for pilot in all_pilot_api_call():
+                for pilot in all_pilot_api_call(ship):
                     pilot_id = db.characters.find_one({'name': pilot }, {'_id': 1})
                     pilot_ids_list.append(pilot_id)
                     ship['pilots'] = pilot_ids_list
